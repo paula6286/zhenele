@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>练完吃啥？— 健身人专属午餐匹配</title>
+<style>
+:root{
+  --bg:#F4F6F2;
+  --card:#FFFFFF;
+  --text:#151C12;
+  --sub:#62745A;
+  --border:#DDE3D8;
+  --green:#2D6A2D;
+  --green2:#4CAF50;
+  --green-light:#E8F5E9;
+  --accent:#FF6B35;
+  --accent-light:#FFF0EB;
+  --yellow:#F5C518;
+  --radius:16px;
+  --shadow:0 2px 16px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);}
+
+/* HERO */
+.hero{
+  background:linear-gradient(155deg,#0D1A0D 0%,#1A3A1A 55%,#0F2A0F 100%);
+  color:#fff;padding:44px 20px 52px;text-align:center;position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 20% 60%,rgba(77,175,80,.15) 0%,transparent 55%),
+             radial-gradient(ellipse at 80% 30%,rgba(255,107,53,.1) 0%,transparent 50%);
+  pointer-events:none;
+}
+.hero-badge{
+  display:inline-block;font-size:11px;letter-spacing:.1em;
+  border:1px solid rgba(255,255,255,.2);border-radius:20px;
+  padding:4px 14px;color:rgba(255,255,255,.6);margin-bottom:16px;
+}
+.hero h1{font-size:clamp(2.2rem,7vw,3.4rem);font-weight:900;line-height:1.1;margin-bottom:10px;letter-spacing:-.01em;}
+.hero h1 em{color:var(--green2);font-style:normal;}
+.hero p{font-size:14px;color:rgba(255,255,255,.65);max-width:320px;margin:0 auto 20px;line-height:1.7;}
+.hero-pills{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:24px;}
+.hero-pill{font-size:12px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.1);}
+.hero-cta{border:none;background:var(--accent);color:#fff;font-weight:700;border-radius:999px;padding:13px 32px;font-size:15px;cursor:pointer;box-shadow:0 4px 20px rgba(255,107,53,.4);transition:all .15s;}
+.hero-cta:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(255,107,53,.45);}
+
+/* WRAP */
+.wrap{max-width:680px;margin:0 auto;padding:24px 16px 60px;}
+
+/* STEP */
+.step{display:none}.step.active{display:block}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);}
+.step-label{font-size:11px;color:var(--sub);letter-spacing:.1em;margin-bottom:6px;}
+.step-title{font-size:22px;font-weight:900;margin-bottom:4px;}
+.step-sub{font-size:13px;color:var(--sub);margin-bottom:18px;line-height:1.6;}
+
+/* PROGRESS */
+.progress{display:flex;gap:6px;align-items:center;margin-bottom:18px;}
+.bar{height:4px;flex:1;background:#DDE3D8;border-radius:999px;transition:background .3s;}
+.bar.on{background:var(--green);}
+.progress span{font-size:12px;color:var(--sub);white-space:nowrap;margin-left:6px;}
+
+/* EMOTION GRID — 2×4 */
+.emotion-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:8px;}
+@media(max-width:480px){.emotion-grid{grid-template-columns:repeat(2,1fr);}}
+.emotion-btn{
+  border:1.5px solid var(--border);background:#fff;border-radius:14px;
+  padding:14px 8px;text-align:center;cursor:pointer;transition:all .18s;
+}
+.emotion-btn:hover{border-color:#9AB896;transform:translateY(-1px);}
+.emotion-btn.active{border-color:var(--green);background:var(--green-light);}
+.e-emoji{font-size:28px;margin-bottom:6px;}
+.e-name{font-size:14px;font-weight:700;margin-bottom:2px;}
+.e-sub{font-size:11px;color:var(--sub);}
+
+/* TRAIN GRID */
+.train-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+@media(max-width:400px){.train-grid{grid-template-columns:repeat(2,1fr);}}
+.train-btn{
+  border:1.5px solid var(--border);background:#fff;border-radius:14px;
+  padding:14px 10px;text-align:center;cursor:pointer;transition:all .18s;
+}
+.train-btn:hover{border-color:#9AB896;}
+.train-btn.active{border-color:var(--accent);background:var(--accent-light);}
+.t-icon{font-size:26px;margin-bottom:6px;}
+.t-name{font-size:14px;font-weight:700;margin-bottom:2px;}
+.t-note{font-size:11px;color:var(--sub);}
+
+/* GOAL GRID */
+.goal-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.goal-btn{
+  border:1.5px solid var(--border);background:#fff;border-radius:14px;
+  padding:14px 14px;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:12px;
+}
+.goal-btn:hover{border-color:#9AB896;}
+.goal-btn.active{border-color:var(--green);background:var(--green-light);}
+.g-icon{font-size:24px;flex-shrink:0;}
+.g-name{font-size:14px;font-weight:700;margin-bottom:2px;}
+.g-note{font-size:11px;color:var(--sub);line-height:1.4;}
+
+/* SECTION */
+.section{margin-top:20px;}
+.section-title{font-size:15px;font-weight:700;margin-bottom:4px;}
+.section-sub{font-size:12px;color:var(--sub);margin-bottom:12px;}
+
+/* ACTIONS */
+.actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;}
+.btn{border:none;border-radius:999px;padding:11px 22px;font-size:14px;cursor:pointer;font-family:inherit;font-weight:700;}
+.btn-primary{background:var(--green);color:#fff;}
+.btn-primary:disabled{background:#B8D4B6;cursor:not-allowed;}
+.btn-ghost{background:#fff;border:1.5px solid var(--border);color:var(--text);}
+.btn-accent{background:var(--accent);color:#fff;}
+
+/* MOOD BAR */
+.moodbar{
+  display:flex;align-items:flex-start;gap:14px;
+  background:#fff;border:1px solid var(--border);
+  border-radius:14px;padding:14px 16px;margin-bottom:14px;
+  box-shadow:var(--shadow);
+}
+.m-emoji{font-size:32px;flex-shrink:0;}
+.m-badge{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--green);background:var(--green-light);border-radius:999px;padding:2px 10px;margin-bottom:6px;display:inline-block;}
+.m-name{font-size:16px;font-weight:800;margin-bottom:3px;}
+.m-desc{font-size:12px;color:var(--sub);line-height:1.6;}
+
+/* MACRO BAR */
+.macro-bar{
+  background:var(--green-light);border:1px solid #C5E0C5;border-radius:12px;
+  padding:12px 14px;margin-bottom:16px;
+}
+.macro-title{font-size:12px;font-weight:700;color:var(--green);margin-bottom:10px;letter-spacing:.04em;}
+.macro-row{display:flex;gap:8px;}
+.macro-seg{flex:1;background:#fff;border-radius:8px;padding:8px 6px;text-align:center;border:1px solid #C5E0C5;}
+.macro-val{font-size:16px;font-weight:900;color:var(--text);}
+.macro-label{font-size:10px;color:var(--sub);margin-top:2px;}
+.macro-pct{font-size:11px;font-weight:700;color:var(--green);margin-top:1px;}
+
+/* RECIPE CARD */
+.recipe-header{display:flex;gap:14px;align-items:flex-start;margin-bottom:14px;}
+.recipe-icon{width:60px;height:60px;border-radius:14px;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0;}
+.recipe-name{font-size:22px;font-weight:900;margin-bottom:4px;}
+.recipe-ing{font-size:13px;color:var(--sub);line-height:1.6;}
+.kcal-badge{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:var(--accent);background:var(--accent-light);border-radius:999px;padding:3px 10px;margin-top:4px;}
+
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0;}
+.tag{font-size:12px;border-radius:999px;padding:4px 12px;font-weight:600;}
+.tag-g{background:var(--green-light);color:var(--green);}
+.tag-o{background:var(--accent-light);color:var(--accent);}
+.tag-y{background:#FFF9E0;color:#8A6B00;}
+
+.benefit{background:#F4F6F2;border-left:4px solid var(--green);padding:12px 14px;border-radius:10px;font-size:14px;line-height:1.7;margin:10px 0 18px;}
+
+/* ALTERNATIVES */
+.alt-label{font-size:12px;font-weight:700;color:var(--sub);letter-spacing:.04em;margin-bottom:10px;}
+.alt-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:18px;}
+.alt-btn{
+  border:1.5px solid var(--border);background:#FAFCFA;border-radius:12px;
+  padding:12px;cursor:pointer;transition:all .15s;text-align:left;
+}
+.alt-btn:hover{border-color:var(--green);background:var(--green-light);}
+.alt-btn.selected{border-color:var(--green);background:var(--green-light);}
+.alt-icon{font-size:22px;margin-bottom:4px;}
+.alt-name{font-size:14px;font-weight:700;color:var(--text);}
+.alt-kcal{font-size:11px;color:var(--accent);font-weight:700;margin-top:2px;}
+.alt-note{font-size:11px;color:var(--sub);margin-top:2px;line-height:1.4;}
+
+/* APP LINKS */
+.app-label{font-size:12px;color:var(--sub);margin-bottom:10px;letter-spacing:.04em;}
+.app-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.app-btn{border:1px solid var(--border);background:#FAFCFA;border-radius:14px;padding:14px 8px;text-align:center;cursor:pointer;width:100%;font-family:inherit;transition:all .15s;text-decoration:none;display:block;}
+.app-btn:hover{border-color:var(--green);background:var(--green-light);}
+.app-icon{font-size:26px;margin-bottom:6px;}
+.app-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.app-desc{font-size:11px;color:var(--sub);}
+
+/* TIPS */
+.tips-box{background:#fff;border:1px solid var(--border);border-radius:14px;padding:16px;margin-top:14px;}
+.tips-title{font-size:13px;font-weight:700;margin-bottom:12px;color:var(--sub);letter-spacing:.05em;}
+.tip-item{display:flex;gap:10px;align-items:flex-start;margin-bottom:8px;font-size:13px;color:var(--sub);line-height:1.6;}
+.tip-item:last-child{margin-bottom:0;}
+.tip-dot{width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0;margin-top:7px;}
+
+.footer{text-align:center;font-size:12px;color:var(--sub);padding:14px 0 28px;border-top:1px solid var(--border);margin-top:16px;}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#0D1A0D;color:#fff;padding:10px 20px;border-radius:999px;font-size:13px;opacity:0;pointer-events:none;transition:.25s;z-index:9999;white-space:nowrap;}
+.toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-badge">健身人专属 · BETA</div>
+  <h1>练完<em>吃啥</em>？</h1>
+  <p>情绪 × 训练状态 × 目标<br>三轴匹配，找到今天最该吃的那碗饭</p>
+  <div class="hero-pills">
+    <span class="hero-pill">💪 增肌 → 高蛋白主食双补</span>
+    <span class="hero-pill">🔥 减脂 → 控碳水精准摄入</span>
+    <span class="hero-pill">😴 恢复日 → 抗炎温补</span>
+  </div>
+  <button class="hero-cta" onclick="document.getElementById('app').scrollIntoView({behavior:'smooth'})">开始匹配 →</button>
+</div>
+
+<div class="wrap" id="app">
+
+  <!-- STEP 1 -->
+  <div class="step active" id="step1">
+    <div class="card">
+      <div class="progress">
+        <div class="bar on"></div><div class="bar"></div><div class="bar"></div>
+        <span>第 1 步 / 3</span>
+      </div>
+      <div class="step-label">STEP 01</div>
+      <div class="step-title">今天心情怎么样？</div>
+      <div class="step-sub">选最接近你当前状态的那一个</div>
+      <div class="emotion-grid" id="emotionGrid"></div>
+
+      <div class="section">
+        <div class="section-title">今天练了吗？</div>
+        <div class="section-sub">影响碳水和蛋白质的分配比例</div>
+        <div class="train-grid" id="trainGrid"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">你的主要目标？</div>
+        <div class="section-sub">影响热量区间和营养侧重</div>
+        <div class="goal-grid" id="goalGrid"></div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="step1Next" disabled onclick="goStep2()">选好了，继续 →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step" id="step2">
+    <div class="moodbar" id="moodBar"></div>
+    <div class="card">
+      <div class="progress">
+        <div class="bar on"></div><div class="bar on"></div><div class="bar"></div>
+        <span>第 2 步 / 3</span>
+      </div>
+      <div class="step-label">STEP 02</div>
+      <div class="step-title">口味方向？</div>
+      <div class="section-sub" style="margin-top:4px">先选口味，后面还有备选菜单</div>
+
+      <div class="section">
+        <div class="section-title">主要食材</div>
+        <div class="section-sub">选今天最想要的蛋白质来源</div>
+        <div class="train-grid" id="ingredientGrid"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">口味偏好</div>
+        <div class="section-sub">选一个最顺手的方向</div>
+        <div class="train-grid" id="flavorGrid"></div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-ghost" onclick="goStep(1)">← 返回</button>
+        <button class="btn btn-primary" id="step2Next" disabled onclick="showResult()">匹配菜谱 →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step" id="step3">
+    <div class="moodbar" id="moodBar2"></div>
+    <div class="card">
+      <div class="progress">
+        <div class="bar on"></div><div class="bar on"></div><div class="bar on"></div>
+        <span>匹配完成</span>
+      </div>
+      <div class="step-label">STEP 03</div>
+      <div class="step-title">今天就吃这个</div>
+      <div id="resultArea"></div>
+      <div class="actions">
+        <button class="btn btn-ghost" onclick="restart()">↺ 重新测一次</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+<div class="footer">练完吃啥 · 营养数据仅供参考，如有特殊需求请咨询营养师</div>
+<div class="toast" id="toast"></div>
+
+<script>
+var state = { emotion:'', train:'', goal:'', ingredient:'', flavor:'' };
+
+var emotions = [
+  {id:'joy',      emoji:'😄', name:'状态绝了', sub:'能量拉满',   color:'#E8F5E9', border:'#4CAF50', note:'高能量日，代谢旺盛，吸收效率最高。', tips:['今天是补充糖原的好时机。','可以稍微放宽碳水摄入上限。']},
+  {id:'trust',    emoji:'🤝', name:'稳稳的',  sub:'踏实平和',   color:'#E8F5E9', border:'#2D6A2D', note:'内心稳定，消化吸收处于最佳状态。',   tips:['按计划吃，别因为心情好多吃一口。','今天补剂吸收也会更好。']},
+  {id:'fear',     emoji:'😰', name:'有点焦虑', sub:'压力较大',   color:'#E3F2FD', border:'#1976D2', note:'压力激素升高，皮质醇会分解肌肉。',   tips:['优先高蛋白，对抗皮质醇分解。','少咖啡因，别再刺激肾上腺。']},
+  {id:'surprise', emoji:'😲', name:'有点乱',  sub:'心绪不定',   color:'#FCE4EC', border:'#C2185B', note:'气血紊乱，今天消化会比平时弱一些。', tips:['先喝温水让身体回稳。','吃简单好消化的，别整花活。']},
+  {id:'sadness',  emoji:'😔', name:'有点低落', sub:'提不起劲',   color:'#EDE7F6', border:'#7B1FA2', note:'低落时容易跳过正餐，反而影响恢复。', tips:['一定要按时吃，哪怕分量少点。','色氨酸丰富的食物有助改善情绪。']},
+  {id:'disgust',  emoji:'😒', name:'没啥胃口', sub:'对什么都烦',  color:'#F3E5F5', border:'#6A1B9A', note:'消化液分泌减少，选清淡易消化的。',   tips:['别强迫自己，从最能接受的开始。','液体蛋白质比固体更容易下咽。']},
+  {id:'anger',    emoji:'😤', name:'有点火大', sub:'烦躁上头',   color:'#FFEBEE', border:'#C62828', note:'肝火旺，消化系统容易痉挛，别乱吃。', tips:['先离开让你烦的场景再吃饭。','苦味蔬菜清热，今天多一点。']},
+  {id:'anticipation',emoji:'🤩',name:'期待感强',sub:'跃跃欲试', color:'#F9FBE7', border:'#827717', note:'备战状态，身体需要稳定持续供能。',   tips:['碳水别省，下午要用到。','保持进食节奏，别因为兴奋忘记吃。']},
+];
+
+var trainTypes = [
+  {id:'strength', icon:'🏋️', name:'力量训练', note:'胸背腿肩臂'},
+  {id:'cardio',   icon:'🏃', name:'有氧训练', note:'跑步/骑行/游泳'},
+  {id:'hiit',     icon:'⚡', name:'HIIT/混合', note:'高强度间歇'},
+  {id:'yoga',     icon:'🧘', name:'瑜伽/拉伸', note:'柔韧恢复'},
+  {id:'rest',     icon:'😴', name:'今天休息', note:'恢复日'},
+  {id:'plan',     icon:'🎯', name:'下午要练', note:'训练前补给'},
+];
+
+var goals = [
+  {id:'muscle', icon:'💪', name:'增肌',   note:'提高肌肉量，高蛋白高碳水'},
+  {id:'cut',    icon:'🔥', name:'减脂',   note:'降体脂率，控碳水提蛋白'},
+  {id:'keep',   icon:'⚖️', name:'维持',   note:'保持现有体型和体重'},
+  {id:'recover',icon:'🌿', name:'恢复/健康',note:'无明确增减重目标，吃好睡好'},
+];
+
+var ingredients = [
+  {id:'chicken', label:'🐔 鸡肉', note:'低脂高蛋白首选'},
+  {id:'beef',    label:'🥩 牛肉', note:'肌酸铁质双补'},
+  {id:'fish',    label:'🐟 鱼虾', note:'Omega-3+蛋白'},
+  {id:'egg',     label:'🥚 鸡蛋', note:'完全蛋白质'},
+  {id:'tofu',    label:'🫘 豆制品',note:'植物蛋白'},
+  {id:'mixed',   label:'🥗 随意',  note:'看菜谱搭'},
+];
+
+var flavors = [
+  {id:'light',  label:'🫧 清淡',  note:'少油少盐'},
+  {id:'savory', label:'🧂 咸鲜',  note:'家常正餐'},
+  {id:'spicy',  label:'🌶️ 微辣', note:'开胃提速'},
+  {id:'sweet',  label:'🍯 酸甜',  note:'糖原补充'},
+  {id:'soup',   label:'🍲 汤水',  note:'液体补给'},
+  {id:'fast',   label:'⚡ 快捷',  note:'10分钟搞定'},
+];
+
+// 菜谱库：以 goal_train_ingredient 三级为key，每档3道备选
+var recipes = {
+  // ---- 增肌 ----
+  muscle:{
+    strength:{
+      chicken:[
+        {name:'鸡胸肉糙米饭',  icon:'🍗', kcal:650, p:52, c:65, f:12, tags:['增肌首选','高蛋白','复合碳水'], ing:'鸡胸肉200g、糙米100g、西兰花', benefit:'训练后黄金补给窗口，蛋白+碳水双补，促进糖原合成和肌肉修复。', kw:'鸡胸肉饭'},
+        {name:'香煎鸡腿饭',    icon:'🍳', kcal:700, p:48, c:70, f:18, tags:['饱腹感强','热量密度高'], ing:'鸡腿1只、米饭、时蔬', benefit:'鸡腿肉含更多肌内脂肪，口感更好，力量训练后适合。', kw:'香煎鸡腿饭'},
+        {name:'鸡肉蔬菜意面',  icon:'🍝', kcal:600, p:45, c:68, f:10, tags:['高碳水','多口感'], ing:'鸡胸肉、意面、番茄酱、西葫芦', benefit:'意面升糖指数适中，快速补充肌糖原同时维持血糖稳定。', kw:'鸡胸肉意面'},
+      ],
+      beef:[
+        {name:'黑椒牛肉炒饭',  icon:'🥩', kcal:720, p:50, c:68, f:18, tags:['增肌','肌酸','铁质'], ing:'牛里脊150g、米饭、洋葱、黑椒', benefit:'牛肉富含肌酸，配合力量训练效果加乘，促进肌肉合成。', kw:'黑椒牛肉炒饭'},
+        {name:'番茄牛肉意面',  icon:'🍝', kcal:680, p:46, c:72, f:16, tags:['碳水充足','高铁'], ing:'牛肉末、番茄、洋葱、意面', benefit:'碳水充足补充糖原，番茄红素帮助抗氧化，减轻训练后炎症。', kw:'番茄肉酱意面'},
+        {name:'牛肉糙米套餐',  icon:'🍱', kcal:700, p:55, c:60, f:16, tags:['均衡增肌','饱腹'], ing:'牛腩100g、糙米、清炒时蔬', benefit:'高蛋白低GI主食组合，增肌期最稳妥的午餐选择。', kw:'牛肉糙米饭'},
+      ],
+      fish:[
+        {name:'三文鱼藜麦碗',  icon:'🐟', kcal:620, p:48, c:55, f:20, tags:['Omega3','抗炎恢复'], ing:'三文鱼150g、藜麦、牛油果、菠菜', benefit:'Omega-3脂肪酸显著减少训练后肌肉炎症，加速恢复，藜麦提供完全蛋白。', kw:'三文鱼藜麦碗'},
+        {name:'清蒸鲈鱼饭',    icon:'🐠', kcal:560, p:46, c:60, f:10, tags:['低脂高蛋白','清淡'], ing:'鲈鱼200g、米饭、蒸鱼豉油', benefit:'脂肪含量低，蛋白质高，力量日需要高蛋白时的理想之选。', kw:'清蒸鲈鱼饭'},
+        {name:'金枪鱼饭团',    icon:'🍙', kcal:500, p:40, c:58, f:8,  tags:['便携','高蛋白'], ing:'金枪鱼罐头、米饭、海苔、黄瓜', benefit:'金枪鱼蛋白质含量高，低脂，是方便快捷的增肌午餐。', kw:'金枪鱼饭团'},
+      ],
+      egg:[
+        {name:'溏心蛋牛肉饭',  icon:'🍳', kcal:680, p:50, c:65, f:20, tags:['双蛋白','满足感'], ing:'鸡蛋2个、牛肉片、米饭、青葱', benefit:'鸡蛋和牛肉双蛋白，氨基酸谱互补，增肌效率更高。', kw:'溏心蛋牛肉饭'},
+        {name:'日式厚蛋烧饭',  icon:'🍱', kcal:600, p:44, c:62, f:18, tags:['完全蛋白','家常'], ing:'鸡蛋3个、米饭、味淋、日式酱油', benefit:'完全蛋白质，所有必需氨基酸齐全，经济高效的增肌来源。', kw:'厚蛋烧饭'},
+        {name:'西班牙烘蛋饭',  icon:'🍳', kcal:640, p:42, c:60, f:22, tags:['热量充足','香浓'], ing:'鸡蛋3个、土豆、洋葱、橄榄油', benefit:'热量充足，增肌期不怕热量盈余，土豆提供快速碳水。', kw:'西班牙烘蛋'},
+      ],
+      tofu:[
+        {name:'麻婆豆腐饭',    icon:'🫘', kcal:580, p:38, c:65, f:16, tags:['植物蛋白','下饭'], ing:'老豆腐、肉末、豆瓣酱、花椒、米饭', benefit:'豆腐提供大豆蛋白，大豆异黄酮有轻微合成代谢作用，适合增肌期。', kw:'麻婆豆腐饭'},
+        {name:'豆腐鸡肉炒饭',  icon:'🍳', kcal:600, p:44, c:62, f:14, tags:['双蛋白','均衡'], ing:'鸡胸肉、老豆腐、鸡蛋、糙米', benefit:'动植物蛋白搭配，氨基酸互补，比单一蛋白质更全面。', kw:'鸡肉豆腐炒饭'},
+        {name:'日式豆腐丼',    icon:'🍱', kcal:540, p:36, c:60, f:12, tags:['低脂','温和'], ing:'嫩豆腐、鸡蛋、海带、日式高汤', benefit:'低脂高蛋白，消化顺畅，适合训练后肠胃敏感时。', kw:'豆腐丼'},
+      ],
+      mixed:[
+        {name:'健身套餐三件组', icon:'🍱', kcal:680, p:55, c:65, f:14, tags:['均衡','便利','标准增肌'], ing:'鸡胸肉+鸡蛋+糙米+西兰花', benefit:'经典增肌组合，蛋白质充足，碳水适量，是健身圈验证了无数次的可靠选择。', kw:'健身套餐'},
+        {name:'牛肉时蔬盖饭',   icon:'🍚', kcal:660, p:50, c:68, f:14, tags:['热饭','主食足'], ing:'牛肉片、时蔬、米饭、酱汁', benefit:'热量密度适中，主食充足，训练后快速补充糖原和蛋白。', kw:'牛肉盖饭'},
+        {name:'蛋白粉燕麦碗',   icon:'🥣', kcal:520, p:52, c:55, f:8,  tags:['快速','高蛋白'], ing:'乳清蛋白粉1勺、燕麦、香蕉、坚果', benefit:'最快速的增肌午餐，蛋白质快速吸收，适合训练后没时间做饭时。', kw:'蛋白燕麦碗'},
+      ],
+    },
+    cardio:{
+      chicken:[
+        {name:'鸡胸沙拉碗',    icon:'🥗', kcal:480, p:46, c:32, f:14, tags:['有氧后','轻负担','高蛋白'], ing:'鸡胸肉180g、混合绿叶、番茄、藜麦', benefit:'有氧后无需大量补碳水，高蛋白维持肌肉，轻食不犯困。', kw:'鸡胸肉沙拉'},
+        {name:'鸡肉蔬菜汤面',   icon:'🍜', kcal:500, p:44, c:50, f:8,  tags:['汤水补给','清爽'], ing:'鸡胸肉、面条、青菜、清汤底', benefit:'有氧大量出汗后，汤面同时补充水分和电解质，清爽不油腻。', kw:'鸡肉清汤面'},
+        {name:'烤鸡胸藜麦饭',   icon:'🍗', kcal:540, p:50, c:48, f:12, tags:['低GI','稳血糖'], ing:'鸡胸肉、藜麦、烤时蔬', benefit:'藜麦低升糖指数，有氧后维持血糖稳定，不引起能量崩塌。', kw:'鸡胸藜麦饭'},
+      ],
+      beef:[
+        {name:'牛肉时蔬汤',     icon:'🍲', kcal:420, p:44, c:22, f:14, tags:['电解质','抗炎'], ing:'牛腱子、萝卜、玉米、枸杞', benefit:'有氧后消耗大，牛肉补铁和肌酸，蔬菜补充抗氧化剂。', kw:'牛肉蔬菜汤'},
+        {name:'牛肉生菜包饭',   icon:'🥬', kcal:460, p:46, c:28, f:16, tags:['低碳','高蛋白'], ing:'牛肉末、生菜叶、蒜末、辣椒', benefit:'低碳水高蛋白，有氧减脂期的理想午餐，饱腹感强。', kw:'牛肉生菜包'},
+        {name:'韩式牛肉拌饭',   icon:'🍱', kcal:580, p:48, c:56, f:14, tags:['均衡','开胃'], ing:'牛肉片、各色蔬菜、米饭、芝麻油', benefit:'多种蔬菜提供丰富的维生素和矿物质，有氧后全面恢复。', kw:'韩式牛肉拌饭'},
+      ],
+      fish:[
+        {name:'金枪鱼沙拉',     icon:'🥗', kcal:400, p:44, c:18, f:12, tags:['超低卡','高蛋白','减脂'], ing:'金枪鱼罐头、鸡蛋、混合蔬菜、柠檬汁', benefit:'有氧配合低卡高蛋白，是减脂期最有效率的组合之一。', kw:'金枪鱼沙拉'},
+        {name:'三文鱼牛油果碗',  icon:'🐟', kcal:520, p:42, c:24, f:24, tags:['健康脂肪','抗炎'], ing:'三文鱼130g、牛油果、黄瓜、糙米少量', benefit:'Omega-3减少有氧运动产生的活性氧，牛油果提供健康脂肪。', kw:'三文鱼牛油果碗'},
+        {name:'虾仁蔬菜炒饭',    icon:'🍳', kcal:500, p:40, c:52, f:8,  tags:['低脂','清爽'], ing:'基围虾200g、鸡蛋、糙米饭、时蔬', benefit:'虾仁极低脂肪，高蛋白，配合蔬菜炒饭轻松满足营养需求。', kw:'虾仁炒饭'},
+      ],
+      egg:[
+        {name:'水波蛋沙拉',      icon:'🥗', kcal:380, p:38, c:20, f:16, tags:['低卡','轻食','有氧后'], ing:'鸡蛋2个、混合绿叶、坚果、橄榄油醋汁', benefit:'低热量高蛋白，有氧减脂组合，维生素和矿物质丰富。', kw:'水波蛋沙拉'},
+        {name:'蔬菜蛋饼',        icon:'🍳', kcal:420, p:36, c:28, f:18, tags:['快手','均衡'], ing:'鸡蛋3个、洋葱、彩椒、菠菜', benefit:'蔬菜蛋白质的轻快组合，有氧后适合不太重的一餐。', kw:'蔬菜蛋饼'},
+        {name:'蛋白质碗',        icon:'🥣', kcal:450, p:46, c:32, f:14, tags:['高蛋白','多元'], ing:'鸡蛋2个+鸡胸肉+藜麦+菠菜', benefit:'三种蛋白质来源，氨基酸谱最全面，有氧后综合恢复。', kw:'蛋白质碗'},
+      ],
+      tofu:[
+        {name:'凉拌豆腐麻酱面',  icon:'🍜', kcal:480, p:34, c:52, f:16, tags:['植物蛋白','清爽'], ing:'嫩豆腐、荞麦面、黄瓜、芝麻酱', benefit:'荞麦低GI，豆腐植物蛋白，有氧后清爽不腻。', kw:'凉拌豆腐面'},
+        {name:'豆腐时蔬汤',      icon:'🍲', kcal:320, p:28, c:20, f:10, tags:['超低卡','清淡'], ing:'嫩豆腐、菠菜、胡萝卜、昆布汤底', benefit:'极低热量，有氧减脂日吃完毫无负担，清淡暖胃。', kw:'豆腐蔬菜汤'},
+        {name:'豆皮蔬菜卷',      icon:'🌯', kcal:440, p:36, c:36, f:14, tags:['便携','有嚼劲'], ing:'豆皮、鸡蛋、黄瓜、胡萝卜', benefit:'豆皮蛋白质密度高，有嚼劲，饱腹感好，有氧后理想选择。', kw:'豆皮蔬菜卷'},
+      ],
+      mixed:[
+        {name:'有氧补给沙拉碗',  icon:'🥗', kcal:450, p:42, c:36, f:14, tags:['均衡','恢复'], ing:'各色蔬菜+蛋白质食材+藜麦', benefit:'有氧后综合补给，蔬菜抗氧化+蛋白质维肌+适量碳水补糖原。', kw:'健身沙拉碗'},
+        {name:'清汤蛋白面',      icon:'🍜', kcal:480, p:44, c:48, f:8,  tags:['汤水','电解质'], ing:'鸡蛋、鸡胸肉、面条、清汤', benefit:'汤水补充有氧出汗流失的电解质，清淡蛋白质维持肌肉。', kw:'清汤蛋白面'},
+        {name:'低卡便当盒',      icon:'🍱', kcal:500, p:46, c:44, f:10, tags:['控热量','均衡'], ing:'鸡胸肉+鸡蛋+蔬菜+少量糙米', benefit:'热量精准控制，有氧减脂期的标准午餐配置。', kw:'低卡便当'},
+      ],
+    },
+    rest:{
+      chicken:[
+        {name:'鸡肉杂蔬汤锅',   icon:'🍲', kcal:520, p:48, c:40, f:14, tags:['抗炎','恢复'], ing:'鸡腿肉、各色蔬菜、姜、清汤', benefit:'休息日重点是恢复，鸡汤中的谷氨酰胺有助修复肠道屏障。', kw:'鸡肉蔬菜汤'},
+        {name:'蒸鸡胸蔬菜饭',   icon:'🍚', kcal:540, p:46, c:55, f:8,  tags:['清淡','均衡'], ing:'鸡胸肉、蒸蔬菜、糙米', benefit:'恢复日保持蛋白质摄入维持肌肉合成，不需要过多热量。', kw:'蒸鸡胸饭'},
+        {name:'鸡丝凉面',       icon:'🍜', kcal:480, p:40, c:52, f:10, tags:['清爽','好消化'], ing:'鸡胸肉丝、荞麦面、黄瓜、芝麻酱', benefit:'休息日消化压力小，清爽凉面既好消化又保证蛋白质。', kw:'鸡丝凉面'},
+      ],
+      beef:[
+        {name:'番茄牛肉汤',     icon:'🍲', kcal:500, p:46, c:30, f:16, tags:['抗氧化','温补'], ing:'牛腱子、番茄、土豆、胡萝卜', benefit:'番茄红素强效抗氧化，帮助清除训练产生的自由基，恢复日佳选。', kw:'番茄牛肉汤'},
+        {name:'牛肉蒸饭',       icon:'🍱', kcal:620, p:50, c:58, f:16, tags:['方便','蛋白足'], ing:'牛肉片、米饭、生姜、葱', benefit:'恢复日也要保持蛋白质合成窗口，牛肉蒸饭简单高效。', kw:'牛肉蒸饭'},
+        {name:'红焖牛腱',       icon:'🥩', kcal:560, p:52, c:25, f:20, tags:['胶原蛋白','关节健康'], ing:'牛腱子、八角、生抽、姜', benefit:'牛腱胶原蛋白丰富，长期训练后关节需要胶原蛋白维护。', kw:'红焖牛腱'},
+      ],
+      fish:[
+        {name:'清蒸鳕鱼藜麦饭', icon:'🐟', kcal:460, p:46, c:50, f:8,  tags:['超低脂','高蛋白'], ing:'鳕鱼150g、藜麦、清炒菠菜', benefit:'休息日降低脂肪摄入，用超低脂鳕鱼维持蛋白质合成。', kw:'清蒸鳕鱼饭'},
+        {name:'三文鱼蔬菜汤',   icon:'🍲', kcal:480, p:44, c:24, f:20, tags:['Omega3','抗炎'], ing:'三文鱼、西兰花、胡萝卜、清汤', benefit:'Omega-3在休息日发挥最大抗炎效果，减少慢性炎症积累。', kw:'三文鱼蔬菜汤'},
+        {name:'虾仁西葫芦面',   icon:'🍝', kcal:440, p:42, c:44, f:10, tags:['低卡','清爽'], ing:'虾仁、西葫芦面条、番茄、蒜末', benefit:'低热量休息日选择，西葫芦替代主食降低碳水摄入。', kw:'虾仁西葫芦面'},
+      ],
+      egg:[
+        {name:'蔬菜蛋白烘焙',   icon:'🍳', kcal:400, p:38, c:26, f:18, tags:['营养密集','恢复'], ing:'鸡蛋3个、各色蔬菜、橄榄油', benefit:'休息日简单高营养，蔬菜和鸡蛋的维生素矿物质补给。', kw:'蔬菜烘蛋'},
+        {name:'太阳蛋三明治',   icon:'🥪', kcal:480, p:36, c:44, f:18, tags:['便捷','均衡'], ing:'鸡蛋、全麦面包、生菜、番茄、鸡胸肉', benefit:'全麦提供B族维生素，恢复日轻松均衡的一餐。', kw:'鸡蛋三明治'},
+        {name:'鸡蛋豆腐粥',     icon:'🥣', kcal:360, p:32, c:40, f:10, tags:['极易消化','护胃'], ing:'鸡蛋、嫩豆腐、粳米、葱花', benefit:'休息日胃需要休息，最易消化的蛋白质组合，温和补给。', kw:'鸡蛋豆腐粥'},
+      ],
+      tofu:[
+        {name:'豆腐味噌汤饭',   icon:'🍱', kcal:420, p:30, c:56, f:10, tags:['益生菌','温和'], ing:'嫩豆腐、味噌、海带、糙米', benefit:'味噌含益生菌，改善肠道微生物组，促进长期恢复。', kw:'味噌豆腐饭'},
+        {name:'凉拌豆腐',       icon:'🫘', kcal:280, p:26, c:12, f:14, tags:['极低卡','清爽'], ing:'嫩豆腐、小葱、酱油、芝麻油', benefit:'休息日最清淡的选择，低热量维持蛋白质，肠胃彻底休息。', kw:'凉拌豆腐'},
+        {name:'豆腐蔬菜煲',     icon:'🍲', kcal:380, p:28, c:30, f:14, tags:['温暖','均衡'], ing:'老豆腐、时令蔬菜、清汤', benefit:'温热豆腐蔬菜汤，休息日的营养补给和身体恢复。', kw:'豆腐蔬菜煲'},
+      ],
+      mixed:[
+        {name:'恢复日均衡套餐', icon:'🍱', kcal:500, p:44, c:50, f:12, tags:['均衡','恢复优先'], ing:'蛋白质食材+蔬菜+适量主食', benefit:'休息日不是放纵日，保持均衡营养是明天训练的基础。', kw:'均衡营养套餐'},
+        {name:'抗炎蔬菜汤',     icon:'🥣', kcal:380, p:28, c:36, f:10, tags:['抗炎','清淡'], ing:'各色蔬菜、豆腐或鸡蛋、姜黄', benefit:'姜黄素强效抗炎，帮助清除运动后积累的炎症因子。', kw:'姜黄蔬菜汤'},
+        {name:'睡眠友好晚... 午餐',icon:'🍽️',kcal:480,p:36,c:52,f:10,tags:['色氨酸','恢复睡眠'],ing:'火鸡肉/鸡胸肉+糙米+香蕉',benefit:'色氨酸+复合碳水组合促进血清素生成，改善睡眠质量，深度恢复。', kw:'色氨酸午餐'},
+      ],
+    },
+  },
+
+  // ---- 减脂 ----
+  cut:{
+    strength:{
+      chicken:[
+        {name:'鸡胸西兰花糙米', icon:'🥗', kcal:500, p:52, c:44, f:8,  tags:['减脂增肌','低脂'], ing:'鸡胸肉200g、西兰花、糙米75g', benefit:'经典减脂期增肌餐，热量控制在500以内，蛋白质最大化。', kw:'鸡胸西兰花饭'},
+        {name:'鸡肉蔬菜饺子',   icon:'🥟', kcal:480, p:44, c:48, f:10, tags:['高蛋白','有饱腹感'], ing:'鸡胸肉+韭菜饺子皮，少油蒸制', benefit:'蒸而非煎，大幅降低脂肪，蛋白质充足，饺子饱腹感强。', kw:'蒸鸡肉饺子'},
+        {name:'鸡丝黄瓜拌面',   icon:'🍜', kcal:440, p:42, c:46, f:6,  tags:['低脂','清爽'], ing:'鸡胸肉、荞麦面、黄瓜、少量芝麻酱', benefit:'荞麦面低GI，热量低，减脂期满足口感又不超标。', kw:'鸡丝荞麦面'},
+      ],
+      beef:[
+        {name:'牛肉生菜碗',     icon:'🥗', kcal:440, p:48, c:22, f:18, tags:['低碳','高蛋白'], ing:'牛里脊150g、生菜、番茄、黑醋汁', benefit:'力量训练搭配低碳减脂，牛肉保证肌肉合成不流失。', kw:'牛肉沙拉碗'},
+        {name:'烤牛肉蔬菜串',   icon:'🍢', kcal:400, p:44, c:18, f:14, tags:['零主食','极低碳'], ing:'牛里脊、各色甜椒、洋葱串', benefit:'极低碳水，减脂期快速消耗脂肪，铁质丰富补充力量训练消耗。', kw:'牛肉蔬菜串'},
+        {name:'牛肉蔬菜汤饭',   icon:'🍲', kcal:500, p:50, c:38, f:14, tags:['控热量','均衡'], ing:'牛腱子100g、蔬菜汤底、少量糙米', benefit:'热量适中，蛋白质充足，减脂力量期的均衡选择。', kw:'牛肉蔬菜汤饭'},
+      ],
+      fish:[
+        {name:'鳕鱼蔬菜套餐',   icon:'🐟', kcal:380, p:46, c:28, f:6,  tags:['极低脂','高蛋白'], ing:'鳕鱼180g、芦笋、樱桃番茄、柠檬', benefit:'鳕鱼脂肪含量极低，蛋白质高，减脂期绝对主力食材。', kw:'鳕鱼蔬菜套餐'},
+        {name:'烤三文鱼沙拉',   icon:'🥗', kcal:460, p:44, c:18, f:22, tags:['健康脂肪','Omega3'], ing:'三文鱼130g、混合绿叶、橄榄油', benefit:'健康脂肪不影响减脂，Omega-3反而促进脂肪氧化。', kw:'三文鱼沙拉'},
+        {name:'虾仁炒时蔬',     icon:'🦐', kcal:350, p:42, c:24, f:6,  tags:['极低卡','清爽'], ing:'基围虾200g、西兰花、彩椒、蒜', benefit:'虾仁热量极低，蛋白质高，减脂期最有效率的蛋白质来源。', kw:'虾仁炒蔬菜'},
+      ],
+      egg:[
+        {name:'水煮蛋白碗',     icon:'🥚', kcal:380, p:42, c:24, f:14, tags:['低热量','高蛋白'], ing:'鸡蛋白3个+全蛋1个、蔬菜、少量燕麦', benefit:'减脂期用蛋白替代部分全蛋，在保证蛋白质的同时降低脂肪。', kw:'蛋白质碗'},
+        {name:'番茄炒蛋糙米饭', icon:'🍳', kcal:460, p:36, c:50, f:12, tags:['家常','控热量'], ing:'鸡蛋2个、番茄、糙米75g', benefit:'经典家常减脂餐，番茄低卡高营养，鸡蛋蛋白质充足。', kw:'番茄炒蛋饭'},
+        {name:'蛋白质沙拉',     icon:'🥗', kcal:360, p:38, c:20, f:14, tags:['低碳','清爽'], ing:'鸡蛋2个、混合蔬菜、金枪鱼、橄榄油', benefit:'多种蛋白质来源，低碳水减脂沙拉，营养密度高。', kw:'蛋白质沙拉'},
+      ],
+      tofu:[
+        {name:'豆腐蔬菜炒',     icon:'🥦', kcal:320, p:28, c:22, f:12, tags:['极低热量','植物蛋白'], ing:'嫩豆腐200g、西兰花、胡萝卜、蒜', benefit:'超低热量减脂餐，豆腐植物蛋白维持肌肉，蔬菜抗氧化。', kw:'豆腐蔬菜炒'},
+        {name:'豆腐蒸蛋',       icon:'🍳', kcal:300, p:30, c:12, f:10, tags:['极低卡','软嫩'], ing:'嫩豆腐150g、鸡蛋2个、蒸鱼豉油', benefit:'热量极低但蛋白充足，减脂期维持力量训练恢复的底线需求。', kw:'豆腐蒸蛋'},
+        {name:'豆皮鸡蛋卷',     icon:'🌯', kcal:400, p:36, c:28, f:16, tags:['有嚼劲','饱腹'], ing:'豆皮、鸡蛋、黄瓜、胡萝卜', benefit:'豆皮蛋白高、热量低，减脂期有嚼劲的满足感。', kw:'豆皮鸡蛋卷'},
+      ],
+      mixed:[
+        {name:'减脂便当',       icon:'🍱', kcal:480, p:48, c:42, f:10, tags:['经典减脂','精准热量'], ing:'鸡胸肉+蔬菜+糙米，严格称量', benefit:'减脂期最重要的是精准热量，经典便当配置帮你控制每一克。', kw:'减脂便当'},
+        {name:'蛋白质沙拉大碗', icon:'🥗', kcal:450, p:50, c:24, f:16, tags:['高蛋白','多蔬菜'], ing:'多种蛋白质食材+大量蔬菜+轻油醋汁', benefit:'蔬菜体积大热量低，大碗吃够饱的同时严格控制热量。', kw:'高蛋白沙拉'},
+        {name:'清汤涮肉面',     icon:'🍜', kcal:460, p:46, c:44, f:8,  tags:['低脂','均衡'], ing:'牛肉片、面条、清汤底、时蔬', benefit:'清汤底脂肪极低，涮肉保证蛋白，减脂期不用放弃肉食。', kw:'清汤涮肉面'},
+      ],
+    },
+    cardio:{
+      chicken:[
+        {name:'鸡胸藜麦沙拉',   icon:'🥗', kcal:420, p:46, c:32, f:10, tags:['有氧减脂','低卡'], ing:'鸡胸肉180g、藜麦50g、混合蔬菜', benefit:'有氧消耗大量热量后，低卡高蛋白的完美搭档，持续燃脂。', kw:'鸡胸藜麦沙拉'},
+        {name:'鸡肉黄瓜汤面',   icon:'🍜', kcal:400, p:42, c:40, f:6,  tags:['低脂','补水'], ing:'鸡胸肉、荞麦面、黄瓜、清汤', benefit:'有氧大量出汗，清汤面同时补充水分，低脂持续减脂。', kw:'鸡肉荞麦面'},
+        {name:'烤鸡块蔬菜串',   icon:'🍢', kcal:380, p:44, c:18, f:10, tags:['极低碳','减脂加速'], ing:'鸡胸肉块、彩椒、洋葱、少油烤', benefit:'有氧后继续低碳水，让身体继续优先燃烧脂肪供能。', kw:'烤鸡肉串'},
+      ],
+      beef:[
+        {name:'牛肉蔬菜沙拉',   icon:'🥗', kcal:400, p:44, c:20, f:14, tags:['低碳减脂','铁质'], ing:'牛里脊130g、混合绿叶、橄榄油', benefit:'有氧大量耗铁，牛肉及时补充，低碳水加速减脂效果。', kw:'牛肉蔬菜沙拉'},
+        {name:'清炖牛肉汤',     icon:'🍲', kcal:360, p:44, c:14, f:14, tags:['低卡','补充电解质'], ing:'牛腱子100g、萝卜、清汤', benefit:'有氧出汗后清汤补充电解质，低热量牛肉提供优质蛋白。', kw:'清炖牛肉汤'},
+        {name:'牛肉菌菇汤锅',   icon:'🍲', kcal:420, p:46, c:18, f:14, tags:['抗氧化','低脂'], ing:'牛肉片、各类菌菇、豆腐、清汤', benefit:'菌菇富含多糖，增强免疫力，有氧训练后综合恢复。', kw:'牛肉菌菇汤'},
+      ],
+      fish:[
+        {name:'金枪鱼低卡碗',   icon:'🐟', kcal:340, p:44, c:20, f:8,  tags:['超低卡','减脂加速'], ing:'金枪鱼罐头、黄瓜、番茄、少量藜麦', benefit:'金枪鱼是减脂期最高性价比的蛋白质来源之一，热量极低。', kw:'金枪鱼低卡碗'},
+        {name:'清蒸鱼片粉丝',   icon:'🐠', kcal:380, p:42, c:32, f:6,  tags:['低脂','好消化'], ing:'鲈鱼片、粉丝、蒸鱼豉油、葱姜', benefit:'有氧后消化略弱，清蒸低脂鱼片最好消化，减少消化负担。', kw:'清蒸鱼片'},
+        {name:'虾仁牛油果沙拉', icon:'🥗', kcal:400, p:40, c:16, f:18, tags:['健康脂肪','减脂'], ing:'基围虾200g、牛油果半个、混合绿叶', benefit:'单不饱和脂肪酸促进脂肪代谢，减脂不等于零脂肪。', kw:'虾仁牛油果沙拉'},
+      ],
+      egg:[
+        {name:'煮蛋蔬菜碗',     icon:'🥗', kcal:320, p:36, c:18, f:14, tags:['超低卡','营养密集'], ing:'水煮蛋2个、各色蔬菜、橄榄油少量', benefit:'热量极低，营养全面，有氧减脂期每日都可以这样吃。', kw:'水煮蛋蔬菜碗'},
+        {name:'蛋白质沙拉碗',   icon:'🥣', kcal:380, p:40, c:22, f:14, tags:['低碳','高蛋白'], ing:'鸡蛋2个+金枪鱼+蔬菜+轻油醋汁', benefit:'双蛋白质来源，低碳水，有氧后持续燃脂的最佳搭档。', kw:'蛋白质沙拉碗'},
+        {name:'菠菜蛋花汤',     icon:'🍲', kcal:200, p:22, c:12, f:6,  tags:['超低热量','补铁'], ing:'鸡蛋1个、菠菜、低钠高汤', benefit:'有氧后最低热量选择，搭配其他低卡食物，极端减脂日使用。', kw:'菠菜蛋花汤'},
+      ],
+      tofu:[
+        {name:'豆腐蔬菜汤',     icon:'🍲', kcal:280, p:26, c:18, f:8,  tags:['超低热量','清淡'], ing:'嫩豆腐、各色蔬菜、昆布汤底', benefit:'有氧减脂的极低热量选择，补充蛋白质的同时几乎不增加热量。', kw:'豆腐蔬菜汤'},
+        {name:'冷豆腐沙拉',     icon:'🥗', kcal:260, p:24, c:10, f:12, tags:['极低卡','清爽'], ing:'嫩豆腐200g、小葱、芝麻、少量酱油', benefit:'日式凉拌豆腐，热量极低，有氧减脂日的清爽午餐。', kw:'日式凉拌豆腐'},
+        {name:'豆腐味噌汤面',   icon:'🍜', kcal:380, p:30, c:42, f:8,  tags:['低脂','益生菌'], ing:'豆腐、荞麦面、味噌、海带、蘑菇', benefit:'味噌益生菌改善肠道，有氧减脂期维护消化系统健康。', kw:'味噌豆腐面'},
+      ],
+      mixed:[
+        {name:'400卡减脂套餐',  icon:'🍱', kcal:400, p:44, c:30, f:10, tags:['精准减脂','均衡'], ing:'严格称量的蛋白质+蔬菜+少量碳水', benefit:'精准控制在400-450kcal，有氧后持续维持热量缺口。', kw:'减脂套餐'},
+        {name:'蔬菜汤+蛋白质',  icon:'🥣', kcal:360, p:40, c:24, f:8,  tags:['低热量','高饱腹'], ing:'大量蔬菜汤+鸡蛋或豆腐', benefit:'蔬菜水分和纤维产生饱腹感，实际热量极低，完美减脂。', kw:'蔬菜汤蛋白'},
+        {name:'希腊酸奶水果碗', icon:'🥣', kcal:380, p:36, c:40, f:6,  tags:['补充糖原','清爽'], ing:'希腊酸奶200g、浆果、燕麦少量', benefit:'有氧后快速补充糖原，乳清蛋白恢复肌肉，益生菌调节肠道。', kw:'酸奶水果碗'},
+      ],
+    },
+    rest:{
+      chicken:[
+        {name:'清蒸鸡蔬菜饭',   icon:'🍚', kcal:460, p:46, c:44, f:8,  tags:['低脂','减脂维持'], ing:'鸡胸肉180g、清蒸蔬菜、糙米70g', benefit:'休息日减少热量输入，低脂清蒸维持蛋白质合成基本需求。', kw:'清蒸鸡胸饭'},
+        {name:'鸡肉蔬菜粥',     icon:'🥣', kcal:380, p:38, c:42, f:6,  tags:['易消化','温和'], ing:'鸡胸肉、糙米粥、胡萝卜、姜', benefit:'减脂休息日最温和的进食方式，容易消化，不给身体增加负担。', kw:'鸡肉蔬菜粥'},
+        {name:'鸡柳蔬菜卷',     icon:'🌯', kcal:420, p:42, c:36, f:10, tags:['便携','均衡'], ing:'鸡胸柳、全麦饼皮、生菜、番茄', benefit:'全麦饼皮纤维丰富，减脂休息日保持消化系统健康。', kw:'全麦鸡肉卷'},
+      ],
+      beef:[
+        {name:'牛肉沙拉',       icon:'🥗', kcal:400, p:44, c:16, f:18, tags:['低碳维持','铁质'], ing:'烤牛里脊150g、混合绿叶菜、橄榄油', benefit:'休息日低碳水，维持减脂趋势，牛肉补充一周训练的铁消耗。', kw:'烤牛肉沙拉'},
+        {name:'牛肉蔬菜汤',     icon:'🍲', kcal:380, p:46, c:18, f:12, tags:['低卡','温补'], ing:'牛腱子100g、各色蔬菜、清汤', benefit:'休息日低热量，清汤减脂，保持热量缺口，温补恢复。', kw:'牛肉蔬菜清汤'},
+        {name:'牛肉蘑菇汤',     icon:'🍲', kcal:360, p:44, c:14, f:12, tags:['低碳','抗炎'], ing:'牛肉片、杂菌菇、葱段、清汤', benefit:'休息日最低碳水选择，菌菇抗炎，牛肉补铁，效率极高。', kw:'牛肉蘑菇汤'},
+      ],
+      fish:[
+        {name:'清蒸鱼蔬菜套',   icon:'🐟', kcal:340, p:44, c:20, f:6,  tags:['超低卡','减脂佳'],  ing:'鲈鱼200g、蒸芦笋、小米饭少量', benefit:'休息日热量最低点，清蒸鲈鱼脂肪极低，维持减脂缺口。', kw:'清蒸鱼套餐'},
+        {name:'金枪鱼芥末沙拉', icon:'🥗', kcal:300, p:40, c:12, f:10, tags:['极低卡','减脂加速'], ing:'金枪鱼罐头、黄瓜、混合绿叶、芥末汁', benefit:'休息日最激进的减脂选择，仅300卡，适合减脂平台期冲关。', kw:'金枪鱼沙拉'},
+        {name:'虾仁豆腐汤',     icon:'🍲', kcal:320, p:40, c:12, f:8,  tags:['超低脂','高蛋白'], ing:'虾仁150g、嫩豆腐、菠菜、清汤', benefit:'双蛋白质来源极低热量，休息日减脂的完美搭配。', kw:'虾仁豆腐汤'},
+      ],
+      egg:[
+        {name:'荷包蛋蔬菜汤',   icon:'🍲', kcal:280, p:26, c:16, f:10, tags:['极低热量','减脂强效'], ing:'鸡蛋2个、时令蔬菜、低钠汤底', benefit:'休息日最低热量，维持最大热量缺口，减脂进入快车道。', kw:'荷包蛋蔬菜汤'},
+        {name:'茶叶蛋蔬菜碗',   icon:'🥣', kcal:350, p:32, c:24, f:12, tags:['控热量','营养密集'], ing:'茶叶蛋2个、各色蔬菜、少量藜麦', benefit:'休息日热量控制的简单方案，营养均衡又不超标。', kw:'茶叶蛋蔬菜'},
+        {name:'蛋白煎饼蔬菜',   icon:'🥞', kcal:380, p:34, c:30, f:14, tags:['饱腹','均衡'], ing:'鸡蛋2个、全麦面、各色蔬菜', benefit:'全麦纤维增加饱腹感，减少休息日的空腹感，维持减脂心态。', kw:'蛋白蔬菜煎饼'},
+      ],
+      tofu:[
+        {name:'豆腐生菜沙拉',   icon:'🥗', kcal:260, p:24, c:12, f:12, tags:['极低热量','清爽'], ing:'嫩豆腐、生菜、小番茄、轻油醋汁', benefit:'减脂最低热量的豆腐沙拉，休息日用最少热量维持蛋白摄入。', kw:'豆腐生菜沙拉'},
+        {name:'豆腐木耳汤',     icon:'🍲', kcal:300, p:28, c:16, f:10, tags:['清肠','低卡'], ing:'豆腐、黑木耳、姜、清汤', benefit:'木耳多糖清肠道，休息日排除一周训练期积累的代谢废物。', kw:'豆腐木耳汤'},
+        {name:'豆腐海带汤',     icon:'🍲', kcal:280, p:26, c:14, f:8,  tags:['碘补充','低卡'], ing:'豆腐、海带、蘑菇、味噌少量', benefit:'海带碘元素支持甲状腺功能，维持基础代谢率，减脂不减代谢。', kw:'豆腐海带汤'},
+      ],
+      mixed:[
+        {name:'减脂休息日套餐', icon:'🍱', kcal:420, p:44, c:32, f:10, tags:['精准减脂','休息日'], ing:'高蛋白低碳水轻度组合', benefit:'休息日热量稍低，维持蛋白质保住肌肉，打造最大热量缺口。', kw:'减脂休息日'},
+        {name:'蔬果绿色大碗',   icon:'🥗', kcal:360, p:30, c:36, f:8,  tags:['高纤维','饱腹'], ing:'大量蔬菜+少量蛋白质+低糖水果', benefit:'高纤维食物减缓消化吸收，休息日保持饱腹感，不会暴食。', kw:'蔬果大碗'},
+        {name:'冰冻蛋白质碗',   icon:'🥣', kcal:380, p:40, c:34, f:6,  tags:['清爽','高蛋白'], ing:'脱脂希腊酸奶+低糖水果+少量燕麦', benefit:'希腊酸奶高蛋白，益生菌改善肠道健康，减脂休息日的清爽选择。', kw:'希腊酸奶碗'},
+      ],
+    },
+  },
+};
+
+// 维持/恢复日 goal — 指向 muscle 的 rest 组合，稍低热量
+recipes.keep = JSON.parse(JSON.stringify(recipes.muscle));
+recipes.recover = JSON.parse(JSON.stringify(recipes.muscle));
+
+function getEmotionObj(){
+  return emotions.find(function(e){return e.id===state.emotion;})||emotions[0];
+}
+
+function getMacroTarget(){
+  var g=state.goal, t=state.train;
+  var targets={
+    muscle:{strength:{p:'2.0g/kg',c:'4-6g/kg',f:'1.0g/kg',kcal:'维持+300~500'},
+            cardio: {p:'1.8g/kg',c:'3-5g/kg',f:'0.8g/kg',kcal:'维持+100~200'},
+            rest:   {p:'1.6g/kg',c:'2-3g/kg',f:'0.8g/kg',kcal:'维持±0'}},
+    cut:   {strength:{p:'2.2g/kg',c:'2-3g/kg',f:'0.8g/kg',kcal:'维持-300~400'},
+            cardio: {p:'2.0g/kg',c:'1.5-2.5g/kg',f:'0.6g/kg',kcal:'维持-400~600'},
+            rest:   {p:'1.8g/kg',c:'1-2g/kg',f:'0.6g/kg',kcal:'维持-500~700'}},
+    keep:  {strength:{p:'1.6g/kg',c:'3-4g/kg',f:'1.0g/kg',kcal:'维持±0'},
+            cardio: {p:'1.5g/kg',c:'2-3g/kg',f:'1.0g/kg',kcal:'维持±0'},
+            rest:   {p:'1.4g/kg',c:'2-3g/kg',f:'1.0g/kg',kcal:'维持±0'}},
+    recover:{strength:{p:'1.6g/kg',c:'3-4g/kg',f:'1.0g/kg',kcal:'维持±50'},
+             cardio: {p:'1.5g/kg',c:'2-4g/kg',f:'1.0g/kg',kcal:'维持±0'},
+             rest:   {p:'1.4g/kg',c:'2-3g/kg',f:'1.0g/kg',kcal:'维持±0'}},
+  };
+  var trainKey = (t==='hiit')?'cardio':(t==='yoga'||t==='plan')?'rest':(t==='rest')?'rest':t;
+  return (targets[g]||targets.keep)[trainKey]||targets.keep.rest;
+}
+
+function getRecipes(){
+  var trainKey=(state.train==='hiit')?'cardio':(state.train==='yoga'||state.train==='plan'||state.train==='rest')?'rest':state.train;
+  var goalPool=(recipes[state.goal]||recipes.muscle)[trainKey]||recipes.muscle.rest;
+  var ingKey=state.ingredient;
+  var list=goalPool[ingKey]||goalPool.mixed||Object.values(goalPool)[0];
+  // pick primary = first; alternatives = others
+  return list;
+}
+
+function renderEmotions(){
+  var html='';
+  emotions.forEach(function(e){
+    html+='<div class="emotion-btn'+(state.emotion===e.id?' active':'')+'" onclick="selectEmotion(\''+e.id+'\')">';
+    html+='<div class="e-emoji">'+e.emoji+'</div>';
+    html+='<div class="e-name">'+e.name+'</div>';
+    html+='<div class="e-sub">'+e.sub+'</div>';
+    html+='</div>';
+  });
+  document.getElementById('emotionGrid').innerHTML=html;
+}
+
+function renderTrain(){
+  var html='';
+  trainTypes.forEach(function(t){
+    html+='<div class="train-btn'+(state.train===t.id?' active':'')+'" onclick="selectTrain(\''+t.id+'\')">';
+    html+='<div class="t-icon">'+t.icon+'</div>';
+    html+='<div class="t-name">'+t.name+'</div>';
+    html+='<div class="t-note">'+t.note+'</div>';
+    html+='</div>';
+  });
+  document.getElementById('trainGrid').innerHTML=html;
+}
+
+function renderGoals(){
+  var html='';
+  goals.forEach(function(g){
+    html+='<div class="goal-btn'+(state.goal===g.id?' active':'')+'" onclick="selectGoal(\''+g.id+'\')">';
+    html+='<div class="g-icon">'+g.icon+'</div>';
+    html+='<div><div class="g-name">'+g.name+'</div><div class="g-note">'+g.note+'</div></div>';
+    html+='</div>';
+  });
+  document.getElementById('goalGrid').innerHTML=html;
+}
+
+function renderIngredients(){
+  var html='';
+  ingredients.forEach(function(item){
+    html+='<div class="train-btn'+(state.ingredient===item.id?' active':'')+'" onclick="selectIng(\''+item.id+'\')">';
+    html+='<div class="t-icon">'+item.label.split(' ')[0]+'</div>';
+    html+='<div class="t-name">'+item.label.split(' ').slice(1).join(' ')+'</div>';
+    html+='<div class="t-note">'+item.note+'</div>';
+    html+='</div>';
+  });
+  document.getElementById('ingredientGrid').innerHTML=html;
+}
+
+function renderFlavors(){
+  var html='';
+  flavors.forEach(function(item){
+    html+='<div class="train-btn'+(state.flavor===item.id?' active':'')+'" onclick="selectFlavor(\''+item.id+'\')">';
+    html+='<div class="t-icon">'+item.label.split(' ')[0]+'</div>';
+    html+='<div class="t-name">'+item.label.split(' ').slice(1).join(' ')+'</div>';
+    html+='<div class="t-note">'+item.note+'</div>';
+    html+='</div>';
+  });
+  document.getElementById('flavorGrid').innerHTML=html;
+}
+
+function renderMoodBar(targetId){
+  var e=getEmotionObj();
+  var goalObj=goals.find(function(g){return g.id===state.goal;})||goals[0];
+  var trainObj=trainTypes.find(function(t){return t.id===state.train;})||trainTypes[0];
+  document.getElementById(targetId).innerHTML=
+    '<div class="m-emoji">'+e.emoji+'</div>'+
+    '<div>'+
+      '<span class="m-badge">'+trainObj.icon+' '+trainObj.name+' · '+goalObj.icon+' '+goalObj.name+'</span>'+
+      '<div class="m-name">当前状态：'+e.name+'</div>'+
+      '<div class="m-desc">'+e.note+'</div>'+
+    '</div>';
+}
+
+function selectEmotion(id){state.emotion=id;renderEmotions();updateStep1Btn();}
+function selectTrain(id){state.train=id;renderTrain();updateStep1Btn();}
+function selectGoal(id){state.goal=id;renderGoals();updateStep1Btn();}
+function selectIng(id){state.ingredient=id;renderIngredients();updateStep2Btn();}
+function selectFlavor(id){state.flavor=id;renderFlavors();updateStep2Btn();}
+
+function updateStep1Btn(){
+  document.getElementById('step1Next').disabled=!(state.emotion&&state.train&&state.goal);
+}
+function updateStep2Btn(){
+  document.getElementById('step2Next').disabled=!(state.ingredient&&state.flavor);
+}
+
+function goStep(n){
+  document.querySelectorAll('.step').forEach(function(el){el.classList.remove('active');});
+  document.getElementById('step'+n).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function goStep2(){
+  renderMoodBar('moodBar');
+  renderMoodBar('moodBar2');
+  renderIngredients();
+  renderFlavors();
+  goStep(2);
+}
+
+function showResult(){
+  var recipes_list=getRecipes();
+  var primary=recipes_list[0];
+  var alts=recipes_list.slice(1);
+  var macro=getMacroTarget();
+  var e=getEmotionObj();
+  var kw=encodeURIComponent(primary.name);
+
+  var tagsHtml=primary.tags.map(function(t,i){
+    return '<span class="tag '+(['tag-g','tag-o','tag-y'][i%3])+'">'+t+'</span>';
+  }).join('');
+
+  var altsHtml='';
+  if(alts.length>0){
+    altsHtml='<div class="alt-label">备选方案 — 同样适合今天</div><div class="alt-grid">';
+    alts.forEach(function(a,i){
+      var ak=encodeURIComponent(a.name);
+      altsHtml+='<div class="alt-btn" id="alt'+i+'" onclick="swapRecipe('+i+')">';
+      altsHtml+='<div class="alt-icon">'+a.icon+'</div>';
+      altsHtml+='<div class="alt-name">'+a.name+'</div>';
+      altsHtml+='<div class="alt-kcal">'+a.kcal+' kcal · 蛋白 '+a.p+'g</div>';
+      altsHtml+='<div class="alt-note">'+a.tags[0]+'</div>';
+      altsHtml+='</div>';
+    });
+    altsHtml+='</div>';
+  }
+
+  window.__recipeList=recipes_list;
+  window.__currentRecipe=0;
+
+  document.getElementById('resultArea').innerHTML=
+    '<div class="macro-bar">'+
+      '<div class="macro-title">📊 今日营养目标参考（'+
+        (goals.find(function(g){return g.id===state.goal;})||goals[0]).name+
+        ' · '+
+        (trainTypes.find(function(t){return t.id===state.train;})||trainTypes[0]).name+
+      '）</div>'+
+      '<div class="macro-row">'+
+        '<div class="macro-seg"><div class="macro-val">'+macro.p+'</div><div class="macro-label">蛋白质</div></div>'+
+        '<div class="macro-seg"><div class="macro-val">'+macro.c+'</div><div class="macro-label">碳水</div></div>'+
+        '<div class="macro-seg"><div class="macro-val">'+macro.f+'</div><div class="macro-label">脂肪</div></div>'+
+        '<div class="macro-seg"><div class="macro-val" style="font-size:12px">'+macro.kcal+'</div><div class="macro-label">热量</div></div>'+
+      '</div>'+
+    '</div>'+
+    '<div id="recipeMain">'+buildRecipeHTML(primary, kw, tagsHtml)+'</div>'+
+    altsHtml+
+    '<div class="tips-box">'+
+      '<div class="tips-title">🧠 今日健身营养贴士</div>'+
+      e.tips.map(function(t){return '<div class="tip-item"><div class="tip-dot"></div><span>'+t+'</span></div>';}).join('')+
+    '</div>';
+
+  goStep(3);
+}
+
+function buildRecipeHTML(r, kw, tagsHtml){
+  if(!tagsHtml) tagsHtml=r.tags.map(function(t,i){return '<span class="tag '+(['tag-g','tag-o','tag-y'][i%3])+'">'+t+'</span>';}).join('');
+  if(!kw) kw=encodeURIComponent(r.name);
+  return '<div class="recipe-header">'+
+    '<div class="recipe-icon">'+r.icon+'</div>'+
+    '<div>'+
+      '<div class="recipe-name">'+r.name+'</div>'+
+      '<div class="recipe-ing">'+r.ing+'</div>'+
+      '<span class="kcal-badge">🔥 '+r.kcal+' kcal &nbsp;|&nbsp; 蛋白 '+r.p+'g &nbsp;|&nbsp; 碳水 '+r.c+'g &nbsp;|&nbsp; 脂肪 '+r.f+'g</span>'+
+    '</div>'+
+  '</div>'+
+  '<div class="tags">'+tagsHtml+'</div>'+
+  '<div class="benefit"><strong>为什么适合今天：</strong>'+r.benefit+'</div>'+
+  '<div class="app-label">立刻解决 — 点击唤起对应 App</div>'+
+  '<div class="app-grid">'+
+    '<button class="app-btn" onclick="launchApp(\'meituan\',\''+encodeURIComponent(r.name)+'\')">'+
+      '<div class="app-icon">🛵</div><div class="app-name">美团 / 闪购</div><div class="app-desc">外卖配送到家</div>'+
+    '</button>'+
+    '<button class="app-btn" onclick="launchApp(\'dianping\',\''+encodeURIComponent(r.name)+'\')">'+
+      '<div class="app-icon">⭐</div><div class="app-name">大众点评</div><div class="app-desc">附近门店评分</div>'+
+    '</button>'+
+    '<button class="app-btn" onclick="launchApp(\'xiachufang\',\''+encodeURIComponent(r.name)+'\')">'+
+      '<div class="app-icon">🍳</div><div class="app-name">下厨房</div><div class="app-desc">自己做菜谱</div>'+
+    '</button>'+
+  '</div>';
+}
+
+function swapRecipe(idx){
+  window.__currentRecipe=idx+1;
+  var r=window.__recipeList[idx+1];
+  document.getElementById('recipeMain').innerHTML=buildRecipeHTML(r,null,null);
+  document.querySelectorAll('.alt-btn').forEach(function(b,i){
+    b.classList.toggle('selected',i===idx);
+  });
+  showToast('已切换到：'+r.name);
+}
+
+function launchApp(platform, kw){
+  var decoded=decodeURIComponent(kw);
+  var configs={
+    meituan:{
+      scheme:'meituanwaimai://www.meituan.com/search?q='+kw,
+      fallback:'https://h5.meituan.com/awp/i/seo-search.html?q='+kw,
+    },
+    dianping:{
+      scheme:'dianping://searchshoplist?keyword='+kw,
+      fallback:'https://www.dianping.com/search/keyword/2/0_'+decoded,
+    },
+    xiachufang:{
+      scheme:'xcfapp://search?keyword='+kw,
+      fallback:'https://www.xiachufang.com/search/?keyword='+decoded,
+    },
+  };
+  var cfg=configs[platform];
+  if(!cfg)return;
+
+  // 尝试用 iframe 发 URL Scheme 唤起 App
+  var iframe=document.createElement('iframe');
+  iframe.style.display='none';
+  document.body.appendChild(iframe);
+
+  var start=Date.now();
+  // 页面被隐藏 = App 唤起成功
+  var onHide=function(){
+    if(document.hidden){
+      clearTimeout(timer);
+      cleanup();
+    }
+  };
+  document.addEventListener('visibilitychange',onHide);
+
+  // 1.8s 后仍在前台 = 唤起失败，降级网页
+  var timer=setTimeout(function(){
+    cleanup();
+    showToast('未检测到 App，跳转网页版…');
+    setTimeout(function(){window.open(cfg.fallback,'_blank');},600);
+  },1800);
+
+  function cleanup(){
+    document.removeEventListener('visibilitychange',onHide);
+    if(iframe.parentNode) document.body.removeChild(iframe);
+  }
+
+  try{ iframe.src=cfg.scheme; }
+  catch(e){ clearTimeout(timer); cleanup(); window.open(cfg.fallback,'_blank'); }
+}
+
+function restart(){
+  state={emotion:'',train:'',goal:'',ingredient:'',flavor:''};
+  renderEmotions();renderTrain();renderGoals();
+  document.getElementById('step1Next').disabled=true;
+  document.getElementById('step2Next').disabled=true;
+  goStep(1);
+}
+
+function showToast(text){
+  var t=document.getElementById('toast');
+  t.textContent=text;t.classList.add('show');
+  clearTimeout(window.__tt);
+  window.__tt=setTimeout(function(){t.classList.remove('show');},2200);
+}
+
+renderEmotions();renderTrain();renderGoals();
+</script>
+</body>
+</html>
