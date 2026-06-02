@@ -767,52 +767,16 @@ function swapRecipe(idx){
 
 function launchApp(platform, kw){
   var decoded=decodeURIComponent(kw);
-  var configs={
-    meituan:{
-      scheme:'meituanwaimai://www.meituan.com/search?q='+kw,
-      fallback:'https://h5.meituan.com/awp/i/seo-search.html?q='+kw,
-    },
-    dianping:{
-      scheme:'dianping://searchshoplist?keyword='+kw,
-      fallback:'https://www.dianping.com/search/keyword/2/0_'+decoded,
-    },
-    xiachufang:{
-      scheme:'xcfapp://search?keyword='+kw,
-      fallback:'https://www.xiachufang.com/search/?keyword='+decoded,
-    },
+  var webUrls={
+    meituan:'https://h5.meituan.com/awp/i/seo-search.html?q='+kw,
+    dianping:'https://www.dianping.com/search/keyword/2/0_'+decoded,
+    xiachufang:'https://www.xiachufang.com/search/?keyword='+decoded,
   };
-  var cfg=configs[platform];
-  if(!cfg)return;
+  var url=webUrls[platform];
+  if(!url)return;
 
-  // 尝试用 iframe 发 URL Scheme 唤起 App
-  var iframe=document.createElement('iframe');
-  iframe.style.display='none';
-  document.body.appendChild(iframe);
-
-  var start=Date.now();
-  // 页面被隐藏 = App 唤起成功
-  var onHide=function(){
-    if(document.hidden){
-      clearTimeout(timer);
-      cleanup();
-    }
-  };
-  document.addEventListener('visibilitychange',onHide);
-
-  // 1.8s 后仍在前台 = 唤起失败，降级网页
-  var timer=setTimeout(function(){
-    cleanup();
-    showToast('未检测到 App，跳转网页版…');
-    setTimeout(function(){window.open(cfg.fallback,'_blank');},600);
-  },1800);
-
-  function cleanup(){
-    document.removeEventListener('visibilitychange',onHide);
-    if(iframe.parentNode) document.body.removeChild(iframe);
-  }
-
-  try{ iframe.src=cfg.scheme; }
-  catch(e){ clearTimeout(timer); cleanup(); window.open(cfg.fallback,'_blank'); }
+  showToast('打开 '+['美团','大众点评','下厨房'][['meituan','dianping','xiachufang'].indexOf(platform)]+'…');
+  window.open(url,'_blank');
 }
 
 function restart(){
